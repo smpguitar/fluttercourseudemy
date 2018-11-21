@@ -1,4 +1,8 @@
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 
 class ProductPage extends StatelessWidget {
   final String title;
@@ -8,7 +12,12 @@ class ProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(onWillPop: (){
+      print('back button pressed');
+      Navigator.pop(context, false);
+      return Future.value(false);
+    },
+      child:Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
@@ -21,10 +30,11 @@ class ProductPage extends StatelessWidget {
                 padding: EdgeInsets.all(10.0),
                 child: RaisedButton(
                   color: Theme.of(context).accentColor,
-                  child: Text('Back'),
-                  onPressed: () => Navigator.pop(context),
+                  child: Text('DELETE'),
+                  onPressed: () => Navigator.pop(context, true),
                 ))
           ]),
+      )
     );
   }
 }
