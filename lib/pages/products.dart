@@ -12,7 +12,7 @@ class ProductsPage extends StatelessWidget {
           automaticallyImplyLeading: false,
           title: Text('Choose'),),
         ListTile(title: Text('Manage Products'), onTap: (){
-          Navigator.push(
+          Navigator.pushReplacement(
             context, MaterialPageRoute(
               builder: (BuildContext context) => ProductsAdminPage())
           );}
