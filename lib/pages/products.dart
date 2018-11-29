@@ -4,13 +4,12 @@ import '../product_manager.dart';
 
 
 class ProductsPage extends StatelessWidget {
-    final List<Map<String, String>>products;
+  final List<Map<String, String>>products;
   final Function addProduct;
   final Function deleteProduct;
 
   ProductsPage(this.products, this.addProduct, this.deleteProduct);
 
- 
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(child: Column(children: <Widget>[

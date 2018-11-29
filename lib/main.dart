@@ -55,6 +55,11 @@ List <Map<String, String>> _products = [];
           }
           return null;     
         },
+        onUnknownRoute: (RouteSettings settings){
+          return MaterialPageRoute(
+            builder: (BuildContext context) => ProductsPage(_products, _addProduct, _deleteProduct)
+          );
+        }
     );
   }
 }
