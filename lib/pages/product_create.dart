@@ -53,14 +53,21 @@ class _ProductCreatePageState extends State<ProductCreatePage>{
             priceValue = double.parse(value);
           });
         }),
-        RaisedButton(child: Text('Save'), onPressed: (){
+        SizedBox(
+          height:10.0
+        ),
+        RaisedButton(child: Text('Save'), 
+        color: Theme.of(context).accentColor,
+        textColor: Colors.white,
+        onPressed: (){
           final Map<String, dynamic> product ={
             'title': titleValue,
             'description': descriptionValue,
             'price': priceValue,
-            'image': 'assets/food.jpg'
+            'image': 'assets/food.jpg',
           };
           widget.addProduct(product);
+           Navigator.pushReplacementNamed(context, '/');
         })
         ],
       )
