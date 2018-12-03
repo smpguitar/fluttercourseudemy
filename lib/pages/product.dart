@@ -51,8 +51,13 @@ class ProductPage extends StatelessWidget {
                       child: Text('Price: \$${price.toString()}', 
                       style: TextStyle(
                         color: Colors.white),),),
-                      SizedBox(height: 10.0,),
-                      Text('Location: ' + location),
+                      SizedBox(height: 10.0),
+                      Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children:<Widget>[
+                      Text('Location: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(location) ]
+                      ),
                   ]))
                 ])));
   }
