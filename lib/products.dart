@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class Products extends StatelessWidget {
   final List<Map<String, dynamic>> products;
+ 
 
   Products(this.products) {
     print('[Product Widget] Contructor');
@@ -39,7 +40,8 @@ class Products extends StatelessWidget {
                       child: Text(
                         '\$${products[index]['price'].toString()}',
                         style: TextStyle(color: Colors.white),
-                      )),
+                      ),
+                      ),
                 ]),
           ),
           Container(
@@ -47,7 +49,7 @@ class Products extends StatelessWidget {
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey, width: 1.0),
                   borderRadius: BorderRadius.circular(5.0)),
-              child: Text('Union Square, San Francisco')),
+              child: Text(products[index]['location'])),
           ButtonBar(alignment: MainAxisAlignment.center, children: <Widget>[
             IconButton(
                 icon: Icon(Icons.info),

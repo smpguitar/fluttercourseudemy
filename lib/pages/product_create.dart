@@ -16,6 +16,8 @@ class _ProductCreatePageState extends State<ProductCreatePage>{
   String _titleValue='';
   String _descriptionValue='';
   double _priceValue;
+  String _locationValue='';
+  
 
   @override
     Widget build(BuildContext context) {
@@ -53,6 +55,16 @@ class _ProductCreatePageState extends State<ProductCreatePage>{
             _priceValue = double.parse(value);
           });
         }),
+            TextField (
+          decoration: InputDecoration(
+            labelText: 'Product Location'
+          ),
+          maxLines: 4,
+          onChanged: (String value){
+          setState((){
+            _locationValue = value;
+          });
+        }),
         SizedBox(
           height:10.0
         ),
@@ -65,6 +77,7 @@ class _ProductCreatePageState extends State<ProductCreatePage>{
             'description': _descriptionValue,
             'price': _priceValue,
             'image': 'assets/food.jpg',
+            'location': _locationValue,
           };
           widget.addProduct(product);
            Navigator.pushReplacementNamed(context, '/products');
