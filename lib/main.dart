@@ -40,7 +40,8 @@ List <Map<String, dynamic>> _products = [];
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.deepOrange,
-        accentColor: Colors.deepPurple
+        accentColor: Colors.deepPurple,
+        buttonColor: Colors.deepPurple,
          ),
         //home: AuthPage(),
         routes: {
