@@ -10,9 +10,8 @@ class ProductsPage extends StatelessWidget {
 
   ProductsPage(this.products);
 
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(child: Column(children: <Widget>[
+Widget _buildSideDrawer(BuildContext context){
+  return Drawer(child: Column(children: <Widget>[
         AppBar(
           automaticallyImplyLeading: false,
           title: Text('Choose'),),
@@ -21,7 +20,12 @@ class ProductsPage extends StatelessWidget {
           title: Text('Manage Products'), onTap: (){
           Navigator.pushReplacementNamed(context, '/admin');
         }
-      )],),),
+      )],),);
+}
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: _buildSideDrawer(context),
       appBar: AppBar(
         title: Text('EasyList'),
         actions: <Widget>[

@@ -13,27 +13,9 @@ class ProductPage extends StatelessWidget {
   ProductPage(
       this.title, this.imageUrl, this.description, this.price, this.location);
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        print('back button pressed');
-        Navigator.pop(context, false);
-        return Future.value(false);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(imageUrl),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: TitleDefault(title),
-            ),
-            Row(
+
+Widget _buildAddressPriceRow(){
+  return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
@@ -59,7 +41,30 @@ class ProductPage extends StatelessWidget {
                   style: TextStyle(color: Colors.grey, fontFamily: 'Oswald'),
                 ),
               ],
+            );
+}
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () {
+        print('back button pressed');
+        Navigator.pop(context, false);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Image.asset(imageUrl),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: TitleDefault(title),
             ),
+            _buildAddressPriceRow(),
             SizedBox(height: 5.0),
             Container(
               margin: EdgeInsets.all(10.0),
