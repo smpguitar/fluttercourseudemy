@@ -15,6 +15,8 @@ class _AuthPageState extends State<AuthPage> {
   String _passwordValue;
   bool _acceptTerms = false;
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
       fit: BoxFit.cover,
@@ -25,31 +27,35 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
           labelText: 'E-Mail', filled: true, fillColor: Colors.white),
       keyboardType: TextInputType.emailAddress,
-      onChanged: (String value) {
-        setState(
-          () {
-            _emailValue = value;
-          },
-        );
+      validator: (String value) {
+        if (value.isEmpty ||
+            RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)) {
+          return 'email is required and should be a valid email';
+        }
+      },
+      onSaved: (String value) {
+        _emailValue = value;
       },
     );
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: (Colors.white)),
       obscureText: true,
-      onChanged: (String value) {
-        setState(
-          () {
-            _passwordValue = value;
-          },
-        );
+      validator: (String value) {
+        if (value.isEmpty || value.length < 8) {
+          return 'Passwords should be at least 8 characters long';
+        }
+      },
+      onSaved: (String value) {
+        _passwordValue = value;
       },
     );
   }
@@ -68,11 +74,13 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void _submitForm() {
-    {
-      print(_emailValue);
-      print(_passwordValue);
-      Navigator.pushReplacementNamed(context, '/products');
+    if (!_formKey.currentState.validate()) {
+      return;
     }
+    _formKey.currentState.save();
+    print(_emailValue);
+    print(_passwordValue);
+    Navigator.pushReplacementNamed(context, '/products');
   }
 
   @override
@@ -84,29 +92,32 @@ class _AuthPageState extends State<AuthPage> {
       appBar: AppBar(
         title: Text('Login'),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: _buildBackgroundImage(),
-        ),
-        padding: EdgeInsets.all(10.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Container(
-              width: targetWidth,
-              child: Column(
-                children: <Widget>[
-                  _buildEmailTextField(),
-                  SizedBox(height: 10.0),
-                  _buildPasswordTextField(),
-                  _buildAcceptSwitch(),
-                  SizedBox(height: 10.0),
-                  RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    textColor: Colors.white,
-                    child: Text('Login'),
-                    onPressed: _submitForm,
-                  ),
-                ],
+      body: Form(
+        key: _formKey,
+        child: Container(
+          decoration: BoxDecoration(
+            image: _buildBackgroundImage(),
+          ),
+          padding: EdgeInsets.all(10.0),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Container(
+                width: targetWidth,
+                child: Column(
+                  children: <Widget>[
+                    _buildEmailTextField(),
+                    SizedBox(height: 10.0),
+                    _buildPasswordTextField(),
+                    _buildAcceptSwitch(),
+                    SizedBox(height: 10.0),
+                    RaisedButton(
+                      color: Theme.of(context).primaryColor,
+                      textColor: Colors.white,
+                      child: Text('Login'),
+                      onPressed: _submitForm,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
