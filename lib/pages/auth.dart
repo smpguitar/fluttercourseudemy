@@ -11,9 +11,11 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _emailValue;
-  String _passwordValue;
-  bool _acceptTerms = false;
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'acceptTerms': false,
+  };
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -33,13 +35,13 @@ class _AuthPageState extends State<AuthPage> {
       keyboardType: TextInputType.emailAddress,
       validator: (String value) {
         if (value.isEmpty ||
-            RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
                 .hasMatch(value)) {
-          return 'email is required and should be a valid email';
+          return 'Please enter a valid email';
         }
       },
       onSaved: (String value) {
-        _emailValue = value;
+        _formData['email'] = value;
       },
     );
   }
@@ -51,22 +53,22 @@ class _AuthPageState extends State<AuthPage> {
       obscureText: true,
       validator: (String value) {
         if (value.isEmpty || value.length < 8) {
-          return 'Passwords should be at least 8 characters long';
+          return 'Passwords is invalid';
         }
       },
       onSaved: (String value) {
-        _passwordValue = value;
+        _formData['password'] = value;
       },
     );
   }
 
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
-        value: _acceptTerms,
+        value: _formData['acceptTerms'],
         onChanged: (bool value) {
           setState(
             () {
-              _acceptTerms = value;
+              _formData['acceptTerms'] = value;
             },
           );
         },
@@ -74,12 +76,11 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void _submitForm() {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
       return;
     }
     _formKey.currentState.save();
-    print(_emailValue);
-    print(_passwordValue);
+    print(_formData);
     Navigator.pushReplacementNamed(context, '/products');
   }
 
@@ -92,17 +93,17 @@ class _AuthPageState extends State<AuthPage> {
       appBar: AppBar(
         title: Text('Login'),
       ),
-      body: Form(
-        key: _formKey,
-        child: Container(
-          decoration: BoxDecoration(
-            image: _buildBackgroundImage(),
-          ),
-          padding: EdgeInsets.all(10.0),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                width: targetWidth,
+      body: Container(
+        decoration: BoxDecoration(
+          image: _buildBackgroundImage(),
+        ),
+        padding: EdgeInsets.all(10.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: targetWidth,
+              child: Form(
+                key: _formKey,
                 child: Column(
                   children: <Widget>[
                     _buildEmailTextField(),
