@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'package:scoped_model/scoped_model.dart';
+
 import './pages/auth.dart';
 import './pages/products_admin.dart';
 import './pages/products.dart';
 import './pages/product.dart';
+import './models/product.dart';
+import './scoped-models/products.dart';
 
 void main() {
   //debugPaintSizeEnabled = true;
@@ -21,28 +25,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp>{
-List <Map<String, dynamic>> _products = [];
-  
-  void _addProduct(Map<String, dynamic> product) {
-    setState(() {
-      _products.add(product);
-    });
-  }
 
-  void _updateProduct(int index,Map<String, dynamic> product){
-    setState(() {
-          _products[index] = product;
-        });
-  }
-
-  void _deleteProduct(int index){
-    setState((){
-      _products.removeAt(index);
-      });
-  }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ScopedModel<ProductsModel>(
+      model: ProductsModel(),
+      child: MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.deepOrange,
@@ -52,8 +40,8 @@ List <Map<String, dynamic>> _products = [];
         //home: AuthPage(),
         routes: {
           '/': (BuildContext context) => AuthPage(),
-          '/products': (BuildContext context) => ProductsPage(_products),
-          '/admin': (BuildContext context) => ProductsAdminPage(_addProduct, _updateProduct, _deleteProduct, _products),
+          '/products': (BuildContext context) => ProductsPage(),
+          '/admin': (BuildContext context) => ProductsAdminPage(),
         },
         onGenerateRoute: (RouteSettings settings){
           final List<String> pathElements = settings.name.split('/'); 
@@ -63,21 +51,15 @@ List <Map<String, dynamic>> _products = [];
           if (pathElements[1] =='product'){
           final int index = int.parse(pathElements[2]);
            return MaterialPageRoute<bool>(
-             builder: (BuildContext context) => ProductPage(
-             _products[index]['title'], 
-             _products[index]['image'], 
-             _products[index]['description'],
-             _products[index]['price'],
-             _products[index]['location']),
-            );
+             builder: (BuildContext context) => ProductPage(index));
           }
           return null;     
         },
         onUnknownRoute: (RouteSettings settings){
           return MaterialPageRoute(
-            builder: (BuildContext context) => ProductsPage(_products)
+            builder: (BuildContext context) => ProductsPage()
           );
         }
-    );
+    ),);
   }
 }
