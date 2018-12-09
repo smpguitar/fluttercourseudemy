@@ -53,7 +53,7 @@ ProductsAdminPage(this.addProduct, this.updateProduct, this.deleteProduct, this.
             body: TabBarView(
               children: <Widget>[
               ProductEditPage(addProduct: addProduct), 
-              ProductListPage(products, updateProduct)],
+              ProductListPage(products, updateProduct, deleteProduct)],
             )));
   }
 }
