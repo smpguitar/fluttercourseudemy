@@ -12,7 +12,6 @@ final int productIndex;
 
   ProductPage(this.productIndex);
 
-
 Widget _buildAddressPriceRow(String location, double price){
   return Row(
               mainAxisAlignment: MainAxisAlignment.center,

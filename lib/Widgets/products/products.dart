@@ -13,17 +13,17 @@ class Products extends StatelessWidget {
 
 
   Widget _buildProductList(List<Product> products) {
-    Widget productCard;
+    Widget productCards;
     if (products.length > 0) {
-      productCard = ListView.builder(
+      productCards = ListView.builder(
         itemBuilder: (BuildContext context, int index) => 
         ProductCard(products[index], index),
         itemCount: products.length,
       );
     } else {
-      productCard = Container();
+      productCards = Container();
     }
-    return productCard;
+    return productCards;
   }
 
   @override
