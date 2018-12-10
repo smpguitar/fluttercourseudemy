@@ -44,13 +44,11 @@ Widget _buildAddressPriceRow(String location, double price){
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
+    return WillPopScope(onWillPop: () {
         print('back button pressed');
         Navigator.pop(context, false);
         return Future.value(false);
-      },
-      child: ScopedModelDescendant<ProductsModel>(builder: (BuildContext context, Widget child, ProductsModel model){
+      }, child: ScopedModelDescendant<ProductsModel>(builder: (BuildContext context, Widget child, ProductsModel model){
       final Product product = model.products[productIndex];
       return Scaffold(
         appBar: AppBar(
