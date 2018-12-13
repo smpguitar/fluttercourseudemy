@@ -9,6 +9,7 @@ import './pages/products.dart';
 import './pages/product.dart';
 import './scoped-models/main.dart';
 
+
 void main() {
   //debugPaintSizeEnabled = true;
   //debugPaintBaselinesEnabled = true;

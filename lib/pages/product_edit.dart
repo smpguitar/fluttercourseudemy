@@ -17,9 +17,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
   final Map<String, dynamic> _formData = {
     'title': null,
     'description': null,
+    'image': 'assets/food.jpg',
     'price': null,
     'location': null,
-    'image': 'assets/food.jpg'
   };
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -113,7 +113,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
           child: Text('Save'),
           color: Theme.of(context).accentColor,
           textColor: Colors.white,
-          onPressed: () => _submitForm(model.addProduct, model.updateProduct,
+          onPressed: () => _submitForm(model.addProduct, model.updateProduct, model.selectProduct,
               model.selectedProductIndex),
         );
       },
@@ -155,7 +155,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         ));
   }
 
-  void _submitForm(Function addProduct, Function updateProduct,
+  void _submitForm(Function addProduct, Function updateProduct, setSelectedProduct,
       [int selectedProductIndex]) {
     if (!_formKey.currentState.validate()) {
       return;
@@ -163,25 +163,23 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _formKey.currentState.save();
     if (selectedProductIndex == null) {
       addProduct(
-        Product(
-            title: _formData['title'],
-            description: _formData['description'],
-            price: _formData['price'],
-            location: _formData['location'],
-            image: _formData['image']),
+        _formData['title'],
+        _formData['description'],
+        _formData['price'],
+        _formData['image'],        
+        _formData['location'],
       );
     } else {
       updateProduct(
-        Product(
-            title: _formData['title'],
-            description: _formData['description'],
-            price: _formData['price'],
-            location: _formData['location'],
-            image: _formData['image']),
+        _formData['title'],
+        _formData['description'],
+        _formData['price'],
+        _formData['image'],        
+        _formData['location'],
       );
     }
 
-    Navigator.pushReplacementNamed(context, '/products');
+    Navigator.pushReplacementNamed(context, '/products').then((_) => setSelectedProduct(null));
   }
 
   @override
