@@ -8,7 +8,7 @@ mixin ConnectedProductsModel on Model {
   User _authenticatedUser;
   int _selProductIndex;
 
-  void addProduct(String title, String description, double price, String image, 
+  void addProduct(String title, String description, double price, String image,
       String location) {
     final Product newProduct = Product(
         title: title,
@@ -24,17 +24,15 @@ mixin ConnectedProductsModel on Model {
 }
 
 mixin ProductsModel on ConnectedProductsModel {
- 
-
   bool _showFavorites = false;
 
   List<Product> get allProducts {
     return List.from(_products);
   }
 
-   List<Product> get displayedProducts {
-    if(_showFavorites){
-    return _products.where((Product product) => product.isFavorite).toList();
+  List<Product> get displayedProducts {
+    if (_showFavorites) {
+      return _products.where((Product product) => product.isFavorite).toList();
     }
     return List.from(_products);
   }
@@ -44,19 +42,18 @@ mixin ProductsModel on ConnectedProductsModel {
   }
 
   Product get selectedProduct {
-    if (_selProductIndex== null) {
+    if (_selProductIndex == null) {
       return null;
     }
     return _products[selectedProductIndex];
   }
 
-  bool get displayFavoritesOnly{
+  bool get displayFavoritesOnly {
     return _showFavorites;
   }
 
-  
-
-  void updateProduct(String title, String description, double price, String image, String location) {
+  void updateProduct(String title, String description, double price,
+      String image, String location) {
     final Product updatedProduct = Product(
         title: title,
         description: description,
@@ -74,40 +71,38 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void toggleProductFavoriteStatus(){
+  void toggleProductFavoriteStatus() {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
-      title: selectedProduct.title, 
-      description: selectedProduct.description,
-      price: selectedProduct.price,
-      image: selectedProduct.image,
-      location: selectedProduct.location,
-      userEmail: selectedProduct.userEmail,
-      userID: selectedProduct.userID,
-      isFavorite: newFavoriteStatus);
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
+        location: selectedProduct.location,
+        userEmail: selectedProduct.userEmail,
+        userID: selectedProduct.userID,
+        isFavorite: newFavoriteStatus);
     _products[selectedProductIndex] = updatedProduct;
     notifyListeners();
   }
 
   void selectProduct(int index) {
     _selProductIndex = index;
-    notifyListeners();
+    if (_selProductIndex != null) {
+      notifyListeners();
+    }
   }
 
-  void toggleDisplayMode(){
+  void toggleDisplayMode() {
     _showFavorites = !_showFavorites;
     notifyListeners();
   }
-
 }
 
-mixin UserModel on ConnectedProductsModel{
-  
-
-  void login(String email, String password){
-    _authenticatedUser = User(id: 'fqpfdwpiehn', email: email, password: password);
+mixin UserModel on ConnectedProductsModel {
+  void login(String email, String password) {
+    _authenticatedUser =
+        User(id: 'fqpfdwpiehn', email: email, password: password);
   }
-
 }
-
