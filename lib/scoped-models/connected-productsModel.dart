@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:scoped_model/scoped_model.dart';
+import 'package:http/http.dart' as http;
 
 import '../models/product.dart';
 import '../models/user.dart';
@@ -8,9 +11,20 @@ mixin ConnectedProductsModel on Model {
   User _authenticatedUser;
   int _selProductIndex;
 
-  void addProduct(String title, String description, double price, String image,
-      String location) {
-    final Product newProduct = Product(
+  void addProduct(
+    String title, String description, double price, String image, String location) {
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image' : 'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+      'price' : price,
+      'location':location
+    };
+    http.post('https://fluttercourseudemy.firebaseio.com/products.json', 
+      body: json.encode(productData)).then((http.Response response) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Product newProduct = Product(
+        id: responseData['name'],
         title: title,
         description: description,
         image: image,
@@ -20,6 +34,7 @@ mixin ConnectedProductsModel on Model {
         userID: _authenticatedUser.password);
     _products.add(newProduct);
     notifyListeners();
+     });
   }
 }
 
@@ -55,6 +70,7 @@ mixin ProductsModel on ConnectedProductsModel {
   void updateProduct(String title, String description, double price,
       String image, String location) {
     final Product updatedProduct = Product(
+        id: null,
         title: title,
         description: description,
         image: image,
@@ -71,10 +87,17 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
+  void fetchProducts(){
+    http.get('https://fluttercourseudemy.firebaseio.com/products.json').then((http.Response response){
+      print(json.decode(response.body));
+    });
+  }
+
   void toggleProductFavoriteStatus() {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
+        id: null,
         title: selectedProduct.title,
         description: selectedProduct.description,
         price: selectedProduct.price,
