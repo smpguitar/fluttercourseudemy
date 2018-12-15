@@ -61,7 +61,7 @@ class ProductCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(product.image),
+          Image.network(product.image),
           _buildProductPriceRow(),
           AddressTag(product.location),
           Text(product.userEmail),

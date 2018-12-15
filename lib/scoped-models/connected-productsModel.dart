@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
@@ -10,31 +11,40 @@ mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
   User _authenticatedUser;
   int _selProductIndex;
+  bool _isLoading = false;
 
-  void addProduct(
-    String title, String description, double price, String image, String location) {
+  Future<Null> addProduct(String title, String description, double price, String image,
+      String location) {
+    _isLoading = true;
+    notifyListeners();
     final Map<String, dynamic> productData = {
       'title': title,
       'description': description,
-      'image' : 'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
-      'price' : price,
-      'location':location
+      'image':
+          'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+      'price': price,
+      'location': location,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
     };
-    http.post('https://fluttercourseudemy.firebaseio.com/products.json', 
-      body: json.encode(productData)).then((http.Response response) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final Product newProduct = Product(
-        id: responseData['name'],
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        location: location,
-        userEmail: _authenticatedUser.email,
-        userID: _authenticatedUser.password);
-    _products.add(newProduct);
-    notifyListeners();
-     });
+    return http
+        .post('https://fluttercourseudemy.firebaseio.com/products.json',
+            body: json.encode(productData))
+        .then((http.Response response) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final Product newProduct = Product(
+          id: responseData['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          location: location,
+          userEmail: _authenticatedUser.email,
+          userID: _authenticatedUser.id);
+      _products.add(newProduct);
+      _isLoading = false;
+      notifyListeners();
+    });
   }
 }
 
@@ -87,9 +97,35 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void fetchProducts(){
-    http.get('https://fluttercourseudemy.firebaseio.com/products.json').then((http.Response response){
+  void fetchProducts() {
+    _isLoading = true;
+    notifyListeners();
+    http
+        .get('https://fluttercourseudemy.firebaseio.com/products.json')
+        .then((http.Response response) {
+      final List<Product> fetchedProductList = [];
       print(json.decode(response.body));
+      final Map<String, dynamic> productListData = json.decode(response.body);
+      if (productListData == null) {
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+      productListData.forEach((String productID, dynamic productData) {
+        final Product product = Product(
+            id: productID,
+            title: productData['title'],
+            description: productData['description'],
+            price: productData['price'],
+            image: productData['image'],
+            location: productData['location'],
+            userEmail: productData['userEmail'],
+            userID: productData['userId']);
+        fetchedProductList.add(product);
+      });
+      _products = fetchedProductList;
+      _isLoading = false;
+      notifyListeners();
     });
   }
 
@@ -127,5 +163,10 @@ mixin UserModel on ConnectedProductsModel {
   void login(String email, String password) {
     _authenticatedUser =
         User(id: 'fqpfdwpiehn', email: email, password: password);
+  }
+}
+mixin UtilityModel on ConnectedProductsModel {
+  bool get isLoading {
+    return _isLoading;
   }
 }
