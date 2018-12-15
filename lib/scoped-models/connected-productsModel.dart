@@ -13,8 +13,8 @@ mixin ConnectedProductsModel on Model {
   int _selProductIndex;
   bool _isLoading = false;
 
-  Future<Null> addProduct(String title, String description, double price, String image,
-      String location) {
+  Future<Null> addProduct(String title, String description, double price,
+      String image, String location) {
     _isLoading = true;
     notifyListeners();
     final Map<String, dynamic> productData = {
@@ -77,19 +77,38 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
-  void updateProduct(String title, String description, double price,
+  Future<Null> updateProduct(String title, String description, double price,
       String image, String location) {
-    final Product updatedProduct = Product(
-        id: null,
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        location: location,
-        userEmail: selectedProduct.userEmail,
-        userID: selectedProduct.userID);
-    _products[selectedProductIndex] = updatedProduct;
+    _isLoading = true;
     notifyListeners();
+    final Map<String, dynamic> updateData = {
+      'title': title,
+      'description': description,
+      'price': price,
+      'image':
+          'https://cdn.pixabay.com/photo/2015/10/02/12/00/chocolate-968457_960_720.jpg',
+      'location': location,
+      'userEmail': selectedProduct.userEmail,
+      'userID': selectedProduct.userID
+    };
+    return http
+        .put(
+            'https://fluttercourseudemy.firebaseio.com/products/${selectedProduct.id}.json',
+            body: json.encode(updateData))
+        .then((http.Response response) {
+      _isLoading = false;
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: title,
+          description: description,
+          price: price,
+          image: image,
+          location: location,
+          userEmail: selectedProduct.userEmail,
+          userID: selectedProduct.userID);
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+    });
   }
 
   void deleteProduct() {
