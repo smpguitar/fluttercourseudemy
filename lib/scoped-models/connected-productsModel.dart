@@ -9,8 +9,8 @@ import '../models/user.dart';
 
 mixin ConnectedProductsModel on Model {
   List<Product> _products = [];
+  String _selProductId;
   User _authenticatedUser;
-  int _selProductIndex;
   bool _isLoading = false;
 
   Future<Null> addProduct(String title, String description, double price,
@@ -55,6 +55,12 @@ mixin ProductsModel on ConnectedProductsModel {
     return List.from(_products);
   }
 
+  int get selectedProductIndex {
+    return _products.indexWhere((Product product) {
+      return product.id == _selProductId;
+    });
+  }
+
   List<Product> get displayedProducts {
     if (_showFavorites) {
       return _products.where((Product product) => product.isFavorite).toList();
@@ -62,15 +68,17 @@ mixin ProductsModel on ConnectedProductsModel {
     return List.from(_products);
   }
 
-  int get selectedProductIndex {
-    return _selProductIndex;
+  String get selectedProductId {
+    return _selProductId;
   }
 
   Product get selectedProduct {
-    if (_selProductIndex == null) {
+    if (_selProductId == null) {
       return null;
     }
-    return _products[selectedProductIndex];
+    return _products.firstWhere((Product product) {
+      return product.id == _selProductId;
+    });
   }
 
   bool get displayFavoritesOnly {
@@ -115,21 +123,21 @@ mixin ProductsModel on ConnectedProductsModel {
     _isLoading = true;
     final deletedProductId = selectedProduct.id;
     _products.removeAt(selectedProductIndex);
-    _selProductIndex = null;
+    _selProductId = null;
     notifyListeners();
-    http.delete('https://fluttercourseudemy.firebaseio.com/products/${deletedProductId}.json')
-    .then((http.Response response){
+    http
+        .delete(
+            'https://fluttercourseudemy.firebaseio.com/products/$deletedProductId.json')
+        .then((http.Response response) {
       _isLoading = false;
       notifyListeners();
     });
-    
   }
- 
 
-  void fetchProducts() {
+  Future<Null> fetchProducts() {
     _isLoading = true;
     notifyListeners();
-    http
+    return http
         .get('https://fluttercourseudemy.firebaseio.com/products.json')
         .then((http.Response response) {
       final List<Product> fetchedProductList = [];
@@ -155,6 +163,7 @@ mixin ProductsModel on ConnectedProductsModel {
       _products = fetchedProductList;
       _isLoading = false;
       notifyListeners();
+      _selProductId = null;
     });
   }
 
@@ -162,7 +171,7 @@ mixin ProductsModel on ConnectedProductsModel {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
-        id: null,
+        id: selectedProduct.id,
         title: selectedProduct.title,
         description: selectedProduct.description,
         price: selectedProduct.price,
@@ -175,9 +184,9 @@ mixin ProductsModel on ConnectedProductsModel {
     notifyListeners();
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
-    if (_selProductIndex != null) {
+  void selectProduct(String productId) {
+    _selProductId = productId;
+    if (_selProductId != null) {
       notifyListeners();
     }
   }
