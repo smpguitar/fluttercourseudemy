@@ -235,7 +235,7 @@ mixin UserModel on ConnectedProductsModel {
       'returnSecureToken': true
     };
     final http.Response response = await http.post(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAS6DX0oC6w-ITHDBIduw-8ggyOD6Y8hSM',
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=',
       body: json.encode(authData),
       headers: {'Content-Type': 'application/json'},
     );
