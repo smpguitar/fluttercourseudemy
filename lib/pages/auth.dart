@@ -4,6 +4,11 @@ import 'package:scoped_model/scoped_model.dart';
 
 import '../scoped-models/main.dart';
 
+enum AuthMode {
+  Signup,
+  Login
+}
+
 //import './products.dart';
 
 class AuthPage extends StatefulWidget {
@@ -21,6 +26,8 @@ class _AuthPageState extends State<AuthPage> {
   };
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordTextController = TextEditingController();
+  AuthMode _authMode = AuthMode.Login;
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -49,18 +56,33 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
+
   Widget _buildPasswordTextField() {
     return TextFormField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: (Colors.white)),
       obscureText: true,
+      controller: _passwordTextController,
       validator: (String value) {
-        if (value.isEmpty || value.length < 8) {
+        if (value.isEmpty || value.length < 6) {
           return 'Passwords is invalid';
         }
       },
       onSaved: (String value) {
         _formData['password'] = value;
+      },
+    );
+  }
+
+   Widget _buildPasswordConfirmTextField() {
+    return TextFormField(
+      decoration: InputDecoration(
+          labelText: 'Confirm Password', filled: true, fillColor: (Colors.white)),
+      obscureText: true,
+      validator: (String value) {
+        if (_passwordTextController.text != value) {
+          return 'Passwords do not match!';
+        }
       },
     );
   }
@@ -78,13 +100,20 @@ class _AuthPageState extends State<AuthPage> {
         title: Text('Accept Terms'));
   }
 
-  void _submitForm(Function login) {
+  void _submitForm(Function login, Function signup) async {
     if (!_formKey.currentState.validate() || !_formData['acceptTerms']) {
       return;
     }
     _formKey.currentState.save();
-   login(_formData['email'], _formData['password']);
-    Navigator.pushReplacementNamed(context, '/products');
+    if (_authMode == AuthMode.Login) {
+       login(_formData['email'], _formData['password']);
+    } else {
+      final Map<String, dynamic> successInformation = 
+       await signup(_formData ['email'], _formData ['password']);
+      if (successInformation['success']) {
+        Navigator.pushReplacementNamed(context, '/products');
+      }
+    }    
   }
 
   @override
@@ -112,7 +141,23 @@ class _AuthPageState extends State<AuthPage> {
                     _buildEmailTextField(),
                     SizedBox(height: 10.0),
                     _buildPasswordTextField(),
+                    SizedBox(height: 10.0),
+                    _authMode == AuthMode.Signup 
+                      ? _buildPasswordConfirmTextField()
+                      : Container (),       
                     _buildAcceptSwitch(),
+                    SizedBox(height: 10.0),
+                    FlatButton(
+                      child: Text('Switch to ${_authMode == AuthMode.Login ? 'Signup' : 'Login'}'),
+                     
+                      onPressed: (){
+                         setState((){
+                            _authMode = _authMode == AuthMode.Login
+                          ? AuthMode.Signup
+                          : AuthMode.Login;
+                      });
+                    },
+                    ),
                     SizedBox(height: 10.0),
                     ScopedModelDescendant<MainModel>(builder:
                         (BuildContext context, Widget child, MainModel model) {
@@ -120,7 +165,7 @@ class _AuthPageState extends State<AuthPage> {
                         color: Theme.of(context).primaryColor,
                         textColor: Colors.white,
                         child: Text('Login'),
-                        onPressed: () => _submitForm(model.login),
+                        onPressed: () => _submitForm(model.login, model.signup),
                       );
                     })
                   ],

@@ -12,7 +12,6 @@ mixin ConnectedProductsModel on Model {
   String _selProductId;
   User _authenticatedUser;
   bool _isLoading = false;
-
 }
 
 mixin ProductsModel on ConnectedProductsModel {
@@ -52,7 +51,7 @@ mixin ProductsModel on ConnectedProductsModel {
     return _showFavorites;
   }
 
-Future<bool> addProduct(String title, String description, double price,
+  Future<bool> addProduct(String title, String description, double price,
       String image, String location) async {
     _isLoading = true;
     notifyListeners();
@@ -96,7 +95,6 @@ Future<bool> addProduct(String title, String description, double price,
       return false;
     }
   }
-
 
   Future<bool> updateProduct(String title, String description, double price,
       String image, String location) {
@@ -228,6 +226,21 @@ mixin UserModel on ConnectedProductsModel {
   void login(String email, String password) {
     _authenticatedUser =
         User(id: 'fqpfdwpiehn', email: email, password: password);
+  }
+
+  Future<Map<String, dynamic>> signup(String email, String password) async {
+    final Map<String, dynamic> authData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+    final http.Response response = await http.post(
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyAS6DX0oC6w-ITHDBIduw-8ggyOD6Y8hSM',
+      body: json.encode(authData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    print(json.decode(response.body));
+    return {'success': true, 'message': 'Authentication succeeded!'};
   }
 }
 mixin UtilityModel on ConnectedProductsModel {
